@@ -1,9 +1,11 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { ethers } from 'ethers'
+import { HandCoinsIcon, ShoppingCartIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
   interface Product {
@@ -17,7 +19,11 @@ export default function Home() {
     ipfsLink: string
     description: string
   }
+  const [data, setData] = useState()
   const queryParams = useSearchParams()
+  const shortAddress = (address: string) => {
+    return address.slice(0, 6) + '...' + address.slice(-4)
+  }
   const mockData: Product = {
     id: 1,
     name: 'John Doe',
@@ -57,7 +63,6 @@ export default function Home() {
       ipfsLink: data[7],
       description: data[8],
     }
-    console.log(product)
   }
 
   useEffect(() => {
@@ -65,19 +70,49 @@ export default function Home() {
   }, [queryParams])
 
   return (
-    <div className=" w-[500px] flex flex-col justify-center items-center gap-y-4 p-4 border border-primary m-4 rounded-lg">
-      <Image
-        src="/ethay_logo.jpg"
-        alt="logo"
-        width={400}
-        height={100}
-        priority
-        style={{
-          width: '100%',
-          height: 'auto',
-        }}
-        placeholder="empty"
-      />
+    <div className=" flex h-[400px] justify-center items-center ">
+      <div className=" p-4 flex flex-col justify-center items-center  rounded-lg gap-y-2 w-full">
+        <div className=" text-xl font-bold text-left w-full">
+          Seller: {shortAddress(mockData.seller)}
+        </div>
+        <Image
+          src="/ethay_logo.jpg"
+          alt="logo"
+          width={1500}
+          height={100}
+          priority
+          style={{
+            width: '100%',
+            height: 'auto',
+          }}
+          className="rounded-lg"
+          placeholder="empty"
+        />
+        <div className=" flex flex-col w-full">
+          <div className="text-xl font-bold w-full text-left">
+            {mockData.name}
+          </div>
+          <div className="flex w-full text-justify text-slate-500 font-semibold">
+            {mockData.description}
+          </div>
+        </div>
+        <div className="flex justify-between gap-x-2 w-full">
+          <div className=" font-semibold">Amount: {mockData.price} USDT</div>
+          <div className="font-semibold">
+            Quantity: {mockData.quantity} left
+          </div>
+        </div>
+        <div className="flex justify-between gap-x-4 w-full">
+          <Button className="w-full text-lg font-semibold">
+            <HandCoinsIcon className="w-4 h-4" />
+            Buy
+          </Button>
+          <Button className="w-full text-lg font-bold">
+            <ShoppingCartIcon className="w-4 h-4" />
+            Cart
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
