@@ -256,17 +256,12 @@ export default function Product() {
 
   const handleCart = () => {
     console.log('cart')
-    window.postMessage(
+    const dataToSend = { item:{id: product?.id,amount:quantity,referral: product?.seller} };
+    window.parent.postMessage(
       {
         type: 'FROM_PAGE',
         action: 'sendData',
-        data: {
-          item: {
-            id: product?.id,
-            amount: quantity,
-            referal: product?.seller,
-          },
-        },
+        data: dataToSend,
         _ethayMessage: true,
       },
       '*'
