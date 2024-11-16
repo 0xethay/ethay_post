@@ -241,6 +241,22 @@ export default function Product() {
     }
   }
 
+  const handleCart = () => {
+    console.log('cart')
+    window.postMessage(
+      {
+        type: 'FROM_PAGE',
+        action: 'sendData',
+        data: {
+          id: product?.id,
+          amount: quantity,
+          referal: product?.seller,
+        },
+      },
+      '*'
+    )
+  }
+
   useEffect(() => {
     ;(async () => {
       setLoading(true)
@@ -351,7 +367,7 @@ export default function Product() {
                   </>
                 )}
               </Button>
-              <Button className="w-full text-lg font-bold">
+              <Button className="w-full text-lg font-bold" onClick={handleCart}>
                 <ShoppingCartIcon className="w-4 h-4" />
                 Cart
               </Button>
