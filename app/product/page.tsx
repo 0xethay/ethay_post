@@ -64,7 +64,7 @@ export default function Product() {
   const { toast } = useToast()
 
   const isUsdtEnough = async () => {
-    if (typeof window === 'undefined' || !window.ethereum) {
+    if (typeof window === 'undefined' || !(window as any).ethereum) {
       toast({
         title: 'Wallet not found',
         description: 'Please install a Web3 wallet like MetaMask',
@@ -73,7 +73,9 @@ export default function Product() {
     }
 
     try {
-      const providerWrite = new ethers.providers.Web3Provider(window.ethereum)
+      const providerWrite = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      )
       const signer = providerWrite.getSigner()
       const contractUsdt = new ethers.Contract(
         contractUsdtAddress,
@@ -148,7 +150,9 @@ export default function Product() {
   const checkIsAllowanceEnough = async () => {
     try {
       setLoadingApprove(true)
-      const providerWrite = new ethers.providers.Web3Provider(window.ethereum)
+      const providerWrite = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      )
       const signer = providerWrite.getSigner()
       const contractUsdt = new ethers.Contract(
         contractUsdtAddress,
@@ -178,7 +182,9 @@ export default function Product() {
   const approve = async () => {
     try {
       setLoadingApprove(true)
-      const providerWrite = new ethers.providers.Web3Provider(window.ethereum)
+      const providerWrite = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      )
       const signer = providerWrite.getSigner()
       const contractUsdt = new ethers.Contract(
         contractUsdtAddress,
@@ -219,7 +225,9 @@ export default function Product() {
     }
     try {
       setLoadingBuy(true)
-      const providerWrite = new ethers.providers.Web3Provider(window.ethereum)
+      const providerWrite = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      )
       const signer = providerWrite.getSigner()
       const contractWithSigner = new ethers.Contract(
         contractAddress,
