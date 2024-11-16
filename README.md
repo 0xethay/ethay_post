@@ -8,10 +8,11 @@ Ethay: A super extension that transforms social platforms like Twitter into a We
 
 The project is organized into four main repositories:
 
-- **[Contract](https://github.com/0xethay/ethay-contract)**: Contains the smart contracts that power the on-chain functionalities.
+- **[Contract](https://github.com/0xethay/ethay-smart-contracts)**: Contains the smart contracts that power the on-chain functionalities.
 - **[Back Office](https://github.com/0xethay/ethay-backoffice)**: Manages the administrative and backend operations.
 - **[Post](https://github.com/0xethay/ethay_post)**: Handles the posting and listing of products on social media platforms.
 - **[Extension](https://github.com/0xethay/ethay-extension)**: The browser extension that integrates with social media for a seamless user experience.experience.
+- **[Subgraph](https://github.com/0xethay/ethay-subgraph)**: Provides a GraphQL API for querying blockchain data efficiently.
 
 ### Key Features
 
