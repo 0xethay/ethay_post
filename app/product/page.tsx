@@ -104,7 +104,11 @@ export default function Product() {
   const contractData = async () => {
     setLoadingContractData(true)
 
-    const data = await contractWithProvider.getProduct(6)
+    const id = queryParams.get('value')
+
+    console.log(id)
+
+    const data = await contractWithProvider.getProduct(Number(id) || 0)
     setProduct((prev) => ({
       ...prev,
       id: data[0].toNumber(),
