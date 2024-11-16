@@ -30,7 +30,7 @@ The project is organized into four main repositories:
 - Integrates with social media to offer personalized shopping recommendations.
 - Allows users to track prices and receive alerts for discounts and deals.
 
-#### On-Chain Swap Functionality
+#### On-Chain DAPP Instantly
 
 ![Ethay Image](https://ethglobal.b0bd725bc77a3ea7cd3826627d01fcb6.r2.cloudflarestorage.com/projects/echdf/images/Screenshot%202567-11-16%20at%2023.53.55.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=dd28f7ba85ca3162a53d5c60b5f3dd05%2F20241116%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241116T174637Z&X-Amz-Expires=3600&X-Amz-Signature=29bf816093402f8162e2d86c7128a3dd152e9d4698eb83192d8310f3b28b0a87&X-Amz-SignedHeaders=host)
 
