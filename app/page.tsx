@@ -37,7 +37,7 @@ export default function Home() {
     ipfsLink: '',
     description: '',
   })
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [loadingApprove, setLoadingApprove] = useState(false)
   const [quantity, setQuantity] = useState(1)
   const [loadingBuy, setLoadingBuy] = useState(false)
@@ -160,7 +160,6 @@ export default function Home() {
       18
     )
 
-    console.log(sum)
     const tx = await contractUsdt.approve(contractAddress, sum)
     console.log(tx)
     await tx.wait()
@@ -168,7 +167,7 @@ export default function Home() {
     setLoadingApprove(false)
   }
 
-  const buttonCondition = async () => {
+  const buttonCondition = () => {
     // const sum = product.price * quantity
     // if (sum > Number(ethers.utils.formatEther())) {
     //   return 'Not enough money'
@@ -187,6 +186,7 @@ export default function Home() {
     const isApproved = await checkIsApproved()
     if (!isApproved) {
       await approve()
+      setLoadingBuy(false)
       return
     }
     const providerWrite = new ethers.providers.Web3Provider(window.ethereum)
@@ -205,7 +205,6 @@ export default function Home() {
     )
     await tx.wait()
     setLoadingBuy(false)
-    console.log(tx)
     setIsNeedAllowance(!(await checkIsApproved()))
   }
 
@@ -282,7 +281,6 @@ export default function Home() {
           <div className="flex justify-between gap-x-4 w-full">
             <Button
               className="w-full text-lg font-semibold"
-              disabled={buttonCondition() === 'Not enough money'}
               onClick={() => handleBuy()}
             >
               {buttonCondition()}
