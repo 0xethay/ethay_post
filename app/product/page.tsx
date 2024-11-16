@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, Suspense, useEffect, useState } from 'react'
 
 export default function Product() {
   interface Product {
@@ -123,6 +123,7 @@ export default function Product() {
       ipfsLink: data[7],
       description: data[8],
     }))
+    console.log(product)
     setLoadingContractData(false)
   }
 
@@ -260,10 +261,13 @@ export default function Product() {
         type: 'FROM_PAGE',
         action: 'sendData',
         data: {
-          id: product?.id,
-          amount: quantity,
-          referal: product?.seller,
+          item: {
+            id: product?.id,
+            amount: quantity,
+            referal: product?.seller,
+          },
         },
+        _ethayMessage: true,
       },
       '*'
     )
@@ -290,108 +294,103 @@ export default function Product() {
   }, [loadingApprove, loadingContractData])
 
   return (
-    <>
-      <div className=" flex h-[500px]  justify-center items-center ">
-        {product && !loading ? (
-          <div className=" p-4 flex flex-col justify-center items-center rounded-lg gap-y-4 w-full max-w-[600px]">
-            <div className=" text-xl font-bold text-left w-full">
-              Seller: {shortAddress(product?.seller ?? '')}
-            </div>
+    <div className=" flex h-[500px]  justify-center items-center ">
+      {product && !loading ? (
+        <div className=" p-4 flex flex-col justify-center items-center rounded-lg gap-y-4 w-full max-w-[600px]">
+          <div className=" text-xl font-bold text-left w-full">
+            Seller: {shortAddress(product?.seller ?? '')}
+          </div>
+          {product?.ipfsLink && (
             <Image
-              src="/ethay_logo.jpg"
+              src={`https://ipfs.io/ipfs/${product?.ipfsLink}`}
               alt="logo"
-              width={1500}
-              height={100}
+              width={500}
+              height={200}
               priority
-              style={{
-                width: '100%',
-                height: 'auto',
-              }}
-              className="rounded-lg"
+              className="rounded-lg object-contain max-w-[500px] max-h-[200px]"
               placeholder="empty"
             />
-            <div className=" flex flex-col w-full">
-              <div className="text-xl font-bold w-full text-left flex justify-between">
-                {product?.name}
-                <div className=" font-semibold">
-                  Price: {product?.price} USDT
+          )}
+
+          <div className=" flex flex-col w-full">
+            <div className="text-xl font-bold w-full text-left flex justify-between">
+              {product?.name}
+              <div className=" font-semibold">Price: {product?.price} USDT</div>
+            </div>
+            <div className="flex w-full text-justify text-slate-500 font-semibold">
+              {product?.description}
+            </div>
+          </div>
+          <div className="flex justify-between gap-x-2 w-full">
+            <div className="font-semibold">
+              Quantity: {product?.quantity} left
+            </div>
+          </div>
+          <div className="flex gap-x-2 w-full">
+            <div className="font-semibold w-full">
+              <div className="flex items-center gap-x-2 w-full justify-between">
+                <div className="flex items-center gap-x-2 ">
+                  <Button onClick={() => handlePlusMinus(-1)}>
+                    <MinusIcon className="w-4 h-4" />
+                  </Button>
+                  <Input
+                    type="text"
+                    placeholder="Enter Text"
+                    name="inputName"
+                    value={quantity}
+                    pattern="^[0-9]+$"
+                    onInput={(e) => handleOnInput(e)}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    className="w-[150px]"
+                  />
+                  <Button onClick={() => handlePlusMinus(1)}>
+                    <PlusIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="font-semibold text-xl">
+                  Sum: {(product?.price ?? 0) * quantity} USDT
                 </div>
               </div>
-              <div className="flex w-full text-justify text-slate-500 font-semibold">
-                {product?.description}
-              </div>
             </div>
-            <div className="flex justify-between gap-x-2 w-full">
-              <div className="font-semibold">
-                Quantity: {product?.quantity} left
-              </div>
-            </div>
-            <div className="flex gap-x-2 w-full">
-              <div className="font-semibold w-full">
-                <div className="flex items-center gap-x-2 w-full justify-between">
-                  <div className="flex items-center gap-x-2 ">
-                    <Button onClick={() => handlePlusMinus(-1)}>
-                      <MinusIcon className="w-4 h-4" />
-                    </Button>
-                    <Input
-                      type="text"
-                      placeholder="Enter Text"
-                      name="inputName"
-                      value={quantity}
-                      pattern="^[0-9]+$"
-                      onInput={(e) => handleOnInput(e)}
-                      onChange={(e) => setQuantity(Number(e.target.value))}
-                      className="w-[150px]"
-                    />
-                    <Button onClick={() => handlePlusMinus(1)}>
-                      <PlusIcon className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="font-semibold text-xl">
-                    Sum: {(product?.price ?? 0) * quantity} USDT
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between gap-x-4 w-full">
-              <Button
-                className="w-full text-lg font-semibold"
-                onClick={() => handleBuy()}
-              >
-                {isNeedAllowance ? (
-                  loadingApprove ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      Approving...
-                    </>
-                  ) : (
-                    <>Approve</>
-                  )
-                ) : loadingBuy ? (
+          </div>
+          <div className="flex justify-between gap-x-4 w-full">
+            <Button
+              className="w-full text-lg font-semibold"
+              onClick={() => handleBuy()}
+            >
+              {isNeedAllowance ? (
+                loadingApprove ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Buying...
+                    Approving...
                   </>
                 ) : (
-                  <>
-                    <HandCoinsIcon className="w-4 h-4" />
-                    Buy
-                  </>
-                )}
-              </Button>
-              <Button className="w-full text-lg font-bold" onClick={handleCart}>
-                <ShoppingCartIcon className="w-4 h-4" />
-                Cart
-              </Button>
-            </div>
+                  <>Approve</>
+                )
+              ) : loadingBuy ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Buying...
+                </>
+              ) : (
+                <>
+                  <HandCoinsIcon className="w-4 h-4" />
+                  Buy
+                </>
+              )}
+            </Button>
+            <Button className="w-full text-lg font-bold" onClick={handleCart}>
+              <ShoppingCartIcon className="w-4 h-4" />
+              Cart
+            </Button>
           </div>
-        ) : (
-          <div className="text-xl font-bold flex justify-center items-center gap-x-2">
-            <Loader2 className="size-6 animate-spin" />
-            Loading...
-          </div>
-        )}
-      </div>
-    </>
+        </div>
+      ) : (
+        <div className="text-xl font-bold flex justify-center items-center gap-x-2">
+          <Loader2 className="size-6 animate-spin" />
+          Loading...
+        </div>
+      )}
+    </div>
   )
 }
