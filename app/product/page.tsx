@@ -41,8 +41,8 @@ export default function Product() {
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!
   const contractUsdtAddress = process.env.NEXT_PUBLIC_CONTRACT_USDT!
   const abi = [
-    'function getProduct(uint256 _id) public view returns (uint256, string memory, uint256, uint256, bool, address, uint256, string memory, string memory)',
-    'function buyProduct(uint256 _id, uint256 _quantity, address _referrer) public',
+    'function products(uint256 _id) public view returns (uint256, string memory, uint256, uint256, bool, address, uint256, string memory, string memory)',
+    'function buyProduct(address _buyer,uint256 _id, uint256 _quantity, address _referrer) public',
   ]
 
   const abiForUsdt = [
@@ -63,54 +63,57 @@ export default function Product() {
 
   const { toast } = useToast()
 
-  const isUsdtEnough = async () => {
-    if (typeof window === 'undefined' || !(window as any).ethereum) {
-      toast({
-        title: 'Wallet not found',
-        description: 'Please install a Web3 wallet like MetaMask',
-      })
-      return false
-    }
+  // const isUsdtEnough = async () => {
+  //   if (typeof window === 'undefined' || !(window as any).ethereum) {
+  //     toast({
+  //       title: 'Wallet not found',
+  //       description: 'Please install a Web3 wallet like MetaMask',
+  //     })
+  //     return false
+  //   }
 
-    try {
-      const providerWrite = new ethers.providers.Web3Provider(
-        (window as any).ethereum
-      )
-      const signer = providerWrite.getSigner()
-      const contractUsdt = new ethers.Contract(
-        contractUsdtAddress,
-        abiForUsdt,
-        signer
-      )
-      const balance = await contractUsdt.balanceOf(await signer.getAddress())
-      const sum = (product?.price ?? 0) * quantity
+  //   try {
+  //     const providerWrite = new ethers.providers.Web3Provider(
+  //       (window as any).ethereum
+  //     )
+  //     const signer = providerWrite.getSigner()
+  //     const contractUsdt = new ethers.Contract(
+  //       contractUsdtAddress,
+  //       abiForUsdt,
+  //       signer
+  //     )
+  //     const balance = await contractUsdt.balanceOf(await signer.getAddress())
+  //     const sum = (product?.price ?? 0) * quantity
 
-      if (Number(ethers.utils.formatEther(balance)) < sum) {
-        toast({
-          title: 'Not enough USDT',
-          description: 'Please add more USDT to your wallet',
-        })
-        return false
-      }
-      return true
-    } catch (error) {
-      console.error('Error checking USDT balance:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to check USDT balance',
-      })
-      return false
-    }
-  }
+  //     if (Number(ethers.utils.formatEther(balance)) < sum) {
+  //       toast({
+  //         title: 'Not enough USDT',
+  //         description: 'Please add more USDT to your wallet',
+  //       })
+  //       return false
+  //     }
+  //     return true
+  //   } catch (error) {
+  //     console.error('Error checking USDT balance:', error)
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Failed to check USDT balance',
+  //     })
+  //     return false
+  //   }
+  // }
 
   const contractData = async () => {
+    console.log(contractAddress, 'in get data')
     setLoadingContractData(true)
 
     const id = queryParams.get('value')
 
     console.log(id)
 
-    const data = await contractWithProvider.getProduct(Number(id) || 0)
+    const data = await contractWithProvider.products(Number(id) || 0)
+
+    console.log(data)
     setProduct((prev) => ({
       ...prev,
       id: data[0].toNumber(),
@@ -213,10 +216,10 @@ export default function Product() {
       return
     }
 
-    if (!(await isUsdtEnough())) {
-      console.log('not enough usdt')
-      return
-    }
+    // if (!(await isUsdtEnough())) {
+    //   console.log('not enough usdt')
+    //   return
+    // }
 
     if (isNeedAllowance) {
       await approve()
@@ -242,6 +245,7 @@ export default function Product() {
       }
       console.log(body)
       const tx = await contractWithSigner.buyProduct(
+        await signer.getAddress(),
         body.id,
         body.quantity,
         body.referrer
@@ -256,7 +260,9 @@ export default function Product() {
 
   const handleCart = () => {
     console.log('cart')
-    const dataToSend = { item:{id: product?.id,amount:quantity,referral: product?.seller} };
+    const dataToSend = {
+      item: { id: product?.id, amount: quantity, referral: product?.seller },
+    }
     window.parent.postMessage(
       {
         type: 'FROM_PAGE',
@@ -271,6 +277,7 @@ export default function Product() {
   useEffect(() => {
     ;(async () => {
       setLoading(true)
+
       await contractData()
     })()
   }, [])
